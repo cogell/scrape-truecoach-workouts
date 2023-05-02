@@ -115,8 +115,8 @@ const saveFile = async (obj: {}, fileName: string): Promise<void> => {
 };
 
 // WTF: expect the whole thing to take ~20min to run
-const workoutURLs = workoutURLsFull.slice(0, 5);
-// const workoutURLs = workoutURLsFull;
+// const workoutURLs = workoutURLsFull.slice(0, 5);
+const workoutURLs = workoutURLsFull;
 
 const main = async () => {
   const browser = await puppeteer.launch({ headless: 'new' });
