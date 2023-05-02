@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 import * as dotenv from 'dotenv';
 import fs from 'fs';
 
-import workoutURLs from './workoutURLs';
+import workoutURLsFull from './workoutURLs';
 
 dotenv.config();
 
@@ -15,15 +15,20 @@ type Workout = {
 type Exercise = {
   name: string;
   instructions: string[];
+  myNotes?: string[];
 };
 
 type Browser = Awaited<ReturnType<typeof puppeteer.launch>>;
 type Page = Awaited<ReturnType<Browser['newPage']>>;
 
 const getDate = async (page: Page): Promise<string> => {
-  const date = await page.$eval('h2', (el) => el.innerText);
+  const maybeDate = await page.$('.start.atc_node');
 
-  return date;
+  if (!maybeDate) {
+    return '';
+  }
+
+  return maybeDate.evaluate((el) => el.innerHTML);
 };
 
 const getExercises = async (page: Page): Promise<Exercise[]> => {
@@ -33,31 +38,33 @@ const getExercises = async (page: Page): Promise<Exercise[]> => {
     return [];
   }
 
-  const exercises = await workoutBlock.$$('.split-left');
+  const exerciseBlocks = await workoutBlock.$$('.tc-list-item.workoutDisplay');
 
-  const exerciseHeaders = await Promise.all(
-    exercises.map(
-      async (exercise) => await exercise.$eval('h4', (el) => el.innerHTML),
-    ),
+  if (!exerciseBlocks) {
+    return [];
+  }
+
+  return await Promise.all(
+    exerciseBlocks.map(async (exerciseBlock) => {
+      const name = await exerciseBlock.$eval('h4', (el) => el.innerHTML);
+      const instructions = await exerciseBlock.$eval('p', (el) => el.innerHTML);
+      const myNotes = await exerciseBlock.$eval('textarea', (el) => el.value);
+
+      return {
+        name,
+        instructions: instructions.split('\n'),
+        myNotes: myNotes.split('\n'),
+      };
+    }),
   );
-
-  const exerciseInstructions = await Promise.all(
-    exercises.map(
-      async (exercise) => await exercise.$eval('p', (el) => el.innerHTML),
-    ),
-  );
-
-  return exerciseHeaders.map((header, index) => ({
-    name: header,
-    instructions: exerciseInstructions[index].split('\n'),
-  }));
 };
 
+// example in: 'https://app.truecoach.co/client/workouts/380805519/edit
+// example out: '380805519'
 const getIDFromURL = (url: string): string => {
   const splitURL = url.split('/');
-  const id = splitURL[splitURL.length - 1];
 
-  return id;
+  return splitURL[splitURL.length - 2];
 };
 
 const getWorkout = async (page: Page, url: string): Promise<Workout> => {
@@ -107,11 +114,12 @@ const saveFile = async (obj: {}, fileName: string): Promise<void> => {
   });
 };
 
-// FIXME:
-const workoutURLsLimited = workoutURLs.slice(0, 3);
+// WTF: expect the whole thing to take ~20min to run
+const workoutURLs = workoutURLsFull.slice(0, 5);
+// const workoutURLs = workoutURLsFull;
 
 const main = async () => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: 'new' });
   const page = await browser.newPage();
 
   const email = process.env.EMAIL;
@@ -123,13 +131,17 @@ const main = async () => {
 
   await login(page, email, password);
 
-  const workouts: Workout[] = [];
+  const workouts: Record<string, Workout> = {};
 
-  workoutURLsLimited.forEach(async (url) => {
+  for (const [index, url] of workoutURLs.entries()) {
     const workout = await getWorkout(page, url);
 
-    workouts.push(workout);
-  });
+    workouts[workout.id] = workout;
+    console.log(index);
+    if (index % 10 === 0 && index !== 0) {
+      await saveFile(workouts, 'workouts.json');
+    }
+  }
 
   await saveFile(workouts, 'workouts.json');
 

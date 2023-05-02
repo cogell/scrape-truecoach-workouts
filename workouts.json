@@ -1,1 +1,64 @@
-[]
+{
+  "380805514": {
+    "id": "380805514",
+    "date": "\n      04/26/2023 12:00 PM\n    ",
+    "exercises": [
+      {
+        "name": "Deadlift",
+        "instructions": [
+          "Bring chalk!",
+          "265x3x5-7 reps @1 RIR",
+          "rest 2-4min"
+        ],
+        "myNotes": ["275", "3x7", "Rpe 9"]
+      },
+      {
+        "name": "DB Bench Press",
+        "instructions": ["60lbs+ x3x10-15 reps @1 RIR", "rest 2-4min"],
+        "myNotes": ["65", "13, 12, 9", "Rpe 9+"]
+      },
+      {
+        "name": "Smith Machine Hip Thrust",
+        "instructions": ["3x8-12 reps @0-1 RIR", "rest 2-3min"],
+        "myNotes": ["275", "12, ?", "Rpe 10?"]
+      }
+    ]
+  },
+  "380805516": { "id": "380805516", "date": "", "exercises": [] },
+  "380805517": { "id": "380805517", "date": "", "exercises": [] },
+  "380805518": {
+    "id": "380805518",
+    "date": "\n      04/27/2023 12:00 PM\n    ",
+    "exercises": [
+      {
+        "name": "Pin Press",
+        "instructions": ["135x5x3-4 reps", "rest 2-3min"],
+        "myNotes": ["135", "5x3", "Rpe 8"]
+      },
+      {
+        "name": "Pin Squat",
+        "instructions": [
+          "12 position",
+          "125x3x5-6 reps @2-3 RIR",
+          "rest 2-3min"
+        ],
+        "myNotes": ["135", "3x6", "Rpe 7"]
+      },
+      {
+        "name": "Tempo Leg Extension",
+        "instructions": [
+          "2ct pause at lock-out, 3ct eccentric",
+          "3x15-20 @1 RIR",
+          "rest 2min"
+        ],
+        "myNotes": ["80", "18, 18, 18", "Rpe 9"]
+      },
+      {
+        "name": "Seated Row Machine",
+        "instructions": ["3x12-20 reps @0-1 RIR", "rest 2-3min"],
+        "myNotes": ["75", "20, 18, 15", "Rpe 9?"]
+      }
+    ]
+  },
+  "380805519": { "id": "380805519", "date": "", "exercises": [] }
+}
